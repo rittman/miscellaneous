@@ -51,11 +51,34 @@ for i in range(nwoman, nwoman+nman):
   lower = upper + mwh
   
   out.paste(man, (left, upper, right, lower))
+
+# text
   
 # Panel B
+ninfus = 67
+# import picture of an injection
+inj = Image.open("injection.png")
+injw, injh = inh.size
 
+injoh = int(float(h)/ninfus)
+injr = injh/injoh
+injow = injw*injr
 
+# resize injection picture
+inj = inj.resize(injow, injoh)
+
+injleft = right
+for i in range(ninfus):
+  left = injleft
+  upper = i*injoh
+  right = left+injow
+  lower = upper + injoh
+
+  out.paste(inj, (left, upper, right, lower))
 
 # Panel C
 
+
+# save file
+out.save(outName)
 
