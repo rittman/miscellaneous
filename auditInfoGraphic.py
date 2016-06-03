@@ -75,15 +75,19 @@ for i in range(nwoman, nwoman+nman):
 font_size=14
 font = truetype('/usr/share/fonts/truetype/msttcorefonts/arialbd.ttf',
                         int(300 * font_size / 72.0))
-
-# male text
-text =  u"\u2640" + " n=" + str(nwoman)
+                        
+smallFont_size = 11 
+smallFont = truetype('/usr/share/fonts/truetype/msttcorefonts/arialbd.ttf',
+                        int(300 * smallFont_size / 72.0))
+                        
+# female text
+text =  str(nwoman) + u"\u2640" + "   " + str(nman) + u"\u2642"
 text_w, text_h = font.getsize(text)
 draw.text((lmar, umar-text_h), text, fill='white', font=font)
 
-# male text
-text =  u"\u2642" + " n=" + str(nman)
-draw.text((lmar, h-bmar), text, fill='white', font=font)
+## male text
+#text =  
+#draw.text((lmar, h-bmar), text, fill='white', font=font)
   
 # Panel B
 ncolj1=2
@@ -101,7 +105,7 @@ injr = float(injoh)/injh
 injow = int(injw*injr)
 
 # resize injection picture
-injo = inj.resize((injow, injoh))
+injo1 = inj.resize((injow, injoh))
 
 # set where the injections start
 injleft = ncol*womanwo + gap
@@ -111,15 +115,15 @@ for i in range(ninfus):
   right = left+injow
   lower = upper + injoh
 
-  out.paste(injo, (left, upper, right, lower), mask=injo)
+  out.paste(injo1, (left, upper, right, lower), mask=injo1)
 
 text = "1st"
 text_w, text_h = font.getsize(text)
 draw.text((injleft+((ncolj1*injow)/2-(text_w/2)), umar-(text_h)), text, fill='white', font=font)
 
 text = str(ninfus)
-text_w, text_h = font.getsize(text)
-draw.text((injleft + (ncolj1*injow)/2-(text_w/2), lower+10), text, fill='white', font=font)
+text_w, text_h = smallFont.getsize(text)
+draw.text((injleft + (ncolj1*injow)/2-(text_w/2), lower+10), text, fill='white', font=smallFont)
 
 # and for follow-up infusions
 ncolj2=2
@@ -129,7 +133,7 @@ ninfus = 15
 inj = Image.open("injection2.png")
 
 # resize injection picture
-injo = inj.resize((injow, injoh))
+injo2 = inj.resize((injow, injoh))
 
 # set where the injections start
 injleft2 = ncol*womanwo + gap + ncolj1*injow
@@ -139,7 +143,7 @@ for i in range(ninfus):
   right = left+injow
   lower = upper + injoh
 
-  out.paste(injo, (left, upper, right, lower), mask=injo)
+  out.paste(injo2, (left, upper, right, lower), mask=injo2)
 # Panel C
 text = "2nd"
 
@@ -147,12 +151,94 @@ text_w, text_h = font.getsize(text)
 draw.text((injleft2 + (ncolj2*injow)/2-(text_w/2), umar-(text_h)), text, fill='white', font=font)
 
 text = str(ninfus)
-text_w, text_h = font.getsize(text)
-draw.text((injleft2 + (ncolj2*injow)/2-(text_w/2), lower+10), text, fill='white', font=font)
+text_w, text_h = smallFont.getsize(text)
+draw.text((injleft2 + (ncolj2*injow)/2-(text_w/2), lower+10), text, fill='white', font=smallFont)
 
-text = "Infusions"
+
+text = "infusion"
+text_w, text_h = smallFont.getsize(text)
+draw.text((injleft + (ncolj2*injow + ncolj1*injow)/2-(text_w/2), umar-(text_h*3)), text, fill='white', font=smallFont)
+
+# Age
+circle = Image.open("circle.png")
+cw,ch = circle.size
+left = w/2
+upper = umar
+
+cdraw = Draw(circle)
+
+text = "Age"
+text_w, text_h = smallFont.getsize(text)
+cdraw.text((cw/2 - text_w/2, ch/4), text, fill='white', font=smallFont)
+text = "35.2"
 text_w, text_h = font.getsize(text)
-draw.text((injleft + (ncolj2*injow + ncolj1*injow)/2-(text_w/2), umar-(text_h*2.2)), text, fill='white', font=font)
+cdraw.text((cw/2 - text_w/2, ch*0.45), text, fill='white', font=font)
+
+out.paste(circle, (left, upper), mask=circle)
+
+# EDSS
+circle = Image.open("circle.png")
+cw,ch = circle.size
+left = w/2
+upper = umar
+
+cdraw = Draw(circle)
+
+text = "EDSS"
+text_w, text_h = smallFont.getsize(text)
+cdraw.text((cw/2 - text_w/2, ch/4), text, fill='white', font=smallFont)
+text = "2.5"
+text_w, text_h = font.getsize(text)
+cdraw.text((cw/2 - text_w/2, ch*0.45), text, fill='white', font=font)
+left = int(w*0.75)
+upper = umar
+out.paste(circle, (left, upper), mask=circle)
+
+
+# time from symptom onset
+sxLeft = 800
+sxRight = w-rmar - 40
+sxBottom = h-bmar - 75
+sxLength = sxRight-sxLeft
+sxMin = 4
+sxMax = 240
+sxMinX = (sxLength/sxMax) * sxMin
+sxWidth = 75
+
+# end injection
+injo1 = injo1.rotate(90, expand=True)
+injow, injoh = injo1.size
+out.paste(injo1, (sxRight-(injow/2), sxBottom-injoh-sxWidth/2), mask=injo1)
+
+# start injection
+out.paste(injo1, (sxLeft + sxMinX - (injow/2), sxBottom-injoh-sxWidth/2), mask=injo1)
+
+
+# length of time since diagnosis/symptoms
+draw.line((sxLeft,sxBottom, sxRight, sxBottom), fill="black", width=sxWidth)
+
+text = "0"
+text_w, text_h = smallFont.getsize(text)
+draw.text((sxLeft - text_w/2, sxBottom+sxWidth/2), text, fill='white', font=smallFont)
+
+text = str(sxMax)
+text_w, text_h = smallFont.getsize(text)
+draw.text((sxRight - text_w/2, sxBottom+sxWidth/2), text, fill='white', font=smallFont)
+
+text = "months"
+text_w, text_h = smallFont.getsize(text)
+draw.text((sxLeft + sxLength/2 - text_w/2, sxBottom++sxWidth/2+ 20), text, fill='white', font=smallFont)
+
+text = "Time from symptom onset"
+text_w, text_h = smallFont.getsize(text)
+draw.text((sxLeft, sxBottom-text_h/2), text, fill=(254,185,0), font=smallFont)
+
+smallInjoh = injoh/2
+smallInjow = injow/2
+
+injo1 = injo1.resize((smallInjow, smallInjoh))
+for i in [10,20,15, 50]:
+    out.paste(injo1, (sxLeft + (sxLength/sxMax)*i, sxBottom-smallInjoh-sxWidth/2), mask=injo1)
 
 # save file
 out.save(outName)
